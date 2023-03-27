@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "718876044783",
+    "project_id": "streamfirestorepagination",
+    "storage_bucket": "streamfirestorepagination.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718876044783:android:82449a51d7ec873f3a5a1a",
+        "android_client_info": {
+          "package_name": "com.example.streamfirestorepagination"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718876044783-1t7447a1j4cdtjfu4hankj4pc9gik8no.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnLUkvBeXIcRCRlyE2-G_IrbXY6zuPSY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718876044783-1t7447a1j4cdtjfu4hankj4pc9gik8no.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
