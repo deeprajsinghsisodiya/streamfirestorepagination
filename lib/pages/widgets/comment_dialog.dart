@@ -69,9 +69,7 @@ class _CommentDialogState extends ConsumerState<CommentDialog> {
                             title: titleState,
                             createdAt: DateTime.now(),
                           );
-                          ref
-                              .watch(commentProvider.notifier)
-                              .addComment(comment);
+                          ref.watch(commentProvider.notifier).addComment(comment);
                           Navigator.pop(context);
                         }
                       : null,

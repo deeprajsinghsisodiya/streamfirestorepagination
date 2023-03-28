@@ -8,7 +8,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('inventory'), actions: [
+      appBar: AppBar(title: Text('Photos'), backgroundColor: Colors.black38, actions: [
         IconButton(
           onPressed: () => showDialog(
             context: context,

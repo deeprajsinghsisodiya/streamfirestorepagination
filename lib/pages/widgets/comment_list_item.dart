@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:streamfirestorepagination/model/comment.dart';
@@ -23,25 +24,39 @@ class CommentListItem extends ConsumerWidget {
         ),
       ),
       onDismissed: (direction) => notifier.removeComment(comment.id!),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ClipRRect(borderRadius: BorderRadius.circular(8),
-                    child: Image.network(comment.text)),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: comment.text,
+                // placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-             Padding(
-               padding:  EdgeInsets.fromLTRB( 20.0,  2.0, 0.0, 0.0),
-               child: Text(comment.title,style: TextStyle(fontSize:15,fontWeight: FontWeight.bold ),),
-             ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.0, 2.0, 0.0, 0.0),
+            child: Text(
+              comment.title,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+          ),
 
           // ListTile(
           //   // title: Text(comment.text),
           //   subtitle: Text(comment.title),
           // ),
-          SizedBox(height: 3,),
-          Divider(color: Colors.black12,thickness: 2,),
+          SizedBox(
+            height: 3,
+          ),
+          Divider(
+            color: Colors.black12,
+            thickness: 2,
+          ),
         ],
       ),
     );

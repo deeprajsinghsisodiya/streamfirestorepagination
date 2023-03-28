@@ -16,24 +16,53 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
     controller.addListener(() => _scrollListeners());
   }
 
+  List<String> username =['Foo','Bar','Bob','Joo','Mart'];
+
+  List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
+  'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
+ 'https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg',
+ 'https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg',
+  'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg',
+  'https://images.pexels.com/photos/4418939/pexels-photo-4418939.jpeg?',
+  'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?',
+  'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?',
+  'https://images.pexels.com/photos/15286/pexels-photo.jpg?'];
+
+
   final ScrollController controller = ScrollController();
   final CommentRepository _repository = CommentRepository();
 
   final Ref ref;
 
   bool _isLoading = false;
+  bool uploadonce = true;
   int totalCount = 0;
-
+  int i = 0;
+  int j=0;
   _fetchFirestoreData() async {
-    // 로딩 중인 경우, return
+    // If it's loading, return
+print(photostring[0]);
+ if (uploadonce ==true) { var collection = FirebaseFirestore.instance.collection('comments');
+    var querySnapshots = await collection.get();
+    for (var doc in querySnapshots.docs) {
 
-    // var collection = FirebaseFirestore.instance.collection('comments');
-    // var querySnapshots = await collection.get();
-    // for (var doc in querySnapshots.docs) {
-    //   await doc.reference.update({
-    //     'text': 'https://www.pixelstalk.net/wp-content/uploads/2016/07/Wallpapers-pexels-photo.jpg',
-    //   });
-    // }
+      await doc.reference.update({
+        'title': username[j],
+
+      });
+
+        await doc.reference.update({
+          'text': photostring[i],
+
+        });
+
+      if(i==9){i=0;}
+      if(j==4){j=0;}
+      i++;
+      j++;
+    }
+ uploadonce = false;
+ }
 
     if (_isLoading) return;
     _isLoading = true;
@@ -41,19 +70,19 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
     // Firestore Load the total number of documents
     totalCount = await _repository.commentTotalCount();
     if (totalCount == 0) {
-      // 전체 문서가 비어있으면 AsyncValue 빈 리스트로 지정
-      // 빈 리스트로 지정하지 않으면 계속 AsyncLoading인 상태가 유지
+      // If the entire document is empty, specify AsyncValue as an empty list
+      // If you do not specify an empty list, it remains AsyncLoading
       state = AsyncValue.data([]);
     }
 
-    // Firestore 문서 목록 스트림
+    // Firestore Document List Stream
     _repository.listenCommentStream().listen((event) async {
       totalCount = await _repository.commentTotalCount();
       state = AsyncValue.data(event);
       // print('controller called listencommentstream');
     });
 
-    // 작업이 끝나면 로딩 중이 아닌 상태로 지정
+    // When the operation is finished, specify a state that is not loading
     _isLoading = false;
   }
 
