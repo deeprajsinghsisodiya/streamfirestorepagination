@@ -1,6 +1,6 @@
 # streamfirestorepagination
 
-Flutter project to paginate data from firebase firestor Using riverpod. 
+Flutter project to paginate data from firebase firestore Using riverpod. 
 Pagination limit is set to 20 items, After 20 items you will see a Circular Progress indicator in the bottom.
 
 
