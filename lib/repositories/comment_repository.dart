@@ -81,7 +81,7 @@ var p =_comments8.length ;
         results = _comments.fold<List<Comment>>(
             [], (initialValue, pageItems) => initialValue..addAll(pageItems));
         int x = results.length;
-print('result $x');
+        print('result $x');
         // StreamController Broadcast all comments using
         _streamController.add(results);
       }
@@ -98,7 +98,7 @@ print('result $x');
 
           }
         }
-        // StreamController를 이용해 모든 Comment를 브로드캐스트
+        // StreamController Broadcast all comments using
         _streamController.add(results);
       }
 
@@ -110,7 +110,7 @@ print('result $x');
     });
   }
 
-  // 전체 문서 갯수 로드
+  // Load the total number of documents
   Future<int> commentTotalCount() async {
     AggregateQuerySnapshot query = await _firestore
         .collection('comments')

@@ -124,4 +124,5 @@ class TextNotifier extends StateNotifier<String> {
   TextNotifier() : super('');
 
   set value(String text) => state = text;
+
 }
