@@ -16,17 +16,17 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
     controller.addListener(() => _scrollListeners());
   }
 
-  List<String> username =['Foo','Bar','Bob','Joo','Mart'];
+  // List<String> username =['Foo','Bar','Bob','Joo','Mart'];
 
-  List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
-  'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
- 'https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg',
- 'https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg',
-  'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg',
-  'https://images.pexels.com/photos/4418939/pexels-photo-4418939.jpeg?',
-  'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?',
-  'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?',
-  'https://images.pexels.com/photos/15286/pexels-photo.jpg?'];
+ //  List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
+ //  'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
+ // 'https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg',
+ // 'https://images.pexels.com/photos/247431/pexels-photo-247431.jpeg',
+ //  'https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg',
+ //  'https://images.pexels.com/photos/4418939/pexels-photo-4418939.jpeg?',
+ //  'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?',
+ //  'https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?',
+ //  'https://images.pexels.com/photos/15286/pexels-photo.jpg?'];
 
 
   final ScrollController controller = ScrollController();
@@ -35,34 +35,34 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
   final Ref ref;
 
   bool _isLoading = false;
-  bool uploadonce = true;
+  // bool uploadonce = true;
   int totalCount = 0;
-  int i = 0;
-  int j=0;
+  // int i = 0;
+  // int j=0;
   _fetchFirestoreData() async {
     // If it's loading, return
-print(photostring[0]);
- if (uploadonce ==true) { var collection = FirebaseFirestore.instance.collection('comments');
-    var querySnapshots = await collection.get();
-    for (var doc in querySnapshots.docs) {
-
-      await doc.reference.update({
-        'title': username[j],
-
-      });
-
-        await doc.reference.update({
-          'text': photostring[i],
-
-        });
-
-      if(i==9){i=0;}
-      if(j==4){j=0;}
-      i++;
-      j++;
-    }
- uploadonce = false;
- }
+// print(photostring[0]);
+//  if (uploadonce ==true) { var collection = FirebaseFirestore.instance.collection('comments');
+//     var querySnapshots = await collection.get();
+//     for (var doc in querySnapshots.docs) {
+//
+//       await doc.reference.update({
+//         'title': username[j],
+//
+//       });
+//
+//         await doc.reference.update({
+//           'text': photostring[i],
+//
+//         });
+//
+//       if(i==9){i=0;}
+//       if(j==4){j=0;}
+//       i++;
+//       j++;
+//     }
+//  uploadonce = false;
+//  }
 
     if (_isLoading) return;
     _isLoading = true;

@@ -41,16 +41,16 @@ class _CommentDialogState extends ConsumerState<CommentDialog> {
             SizedBox(height: 12.0),
             TextField(
               controller: _textController,
-              onChanged: (value) => textNotifier.value = value,
+              onChanged: (value) => textNotifier.value= value,
               decoration: InputDecoration(
-                label: Text('Ana'),
+                label: Text('Text'),
               ),
             ),
             TextField(
               controller: _titleController,
               onChanged: (value) => titleNotifier.value = value,
               decoration: InputDecoration(
-                label: Text('Figure'),
+                label: Text('Title'),
               ),
             ),
             SizedBox(height: 12.0),
