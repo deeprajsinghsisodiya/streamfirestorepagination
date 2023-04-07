@@ -101,6 +101,7 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
 
   addComment(Comment comment) async {
     await _firestore.collection('comments').add(comment.toJson());
+    print('aadd executed');
   }
 
   removeComment(String id) async {
@@ -114,7 +115,7 @@ final titleProvider =
 class TitleNotifier extends StateNotifier<String> {
   TitleNotifier() : super('');
 
-  set value(String text) => state = text;
+  set value(String text) => state = text; // value and text are just name can be any word , ///state can be used directly in place of value in comment dialog
 }
 
 final textProvider =
@@ -123,6 +124,6 @@ final textProvider =
 class TextNotifier extends StateNotifier<String> {
   TextNotifier() : super('');
 
-  set value(String text) => state = text;
+  set value(String text) => state = text;  // value and text are just name can be any word ,
 
 }

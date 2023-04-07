@@ -71,7 +71,7 @@ var p =_comments8.length ;
         }
         // If the page doesn't exist, add a new page
         else {
-          print('else of page exist executed $pageExists');
+          print('else of page exist executed $pageExists');//else of page exist executed false executed when we add data first time
           _comments.add(comments);
           _comments8.add(comments);
 
