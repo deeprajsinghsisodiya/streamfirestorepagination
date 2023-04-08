@@ -16,7 +16,7 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
     controller.addListener(() => _scrollListeners());
   }
 
-  List<String> username =['Foo','Bar','Bob','Joo','Mart'];
+  List<String> username =['Foo','Bar','Bob','Joo','Mart','dav'];
 
   List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
   'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
@@ -54,7 +54,7 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
    //        'text': photostring[i],
    //      });
    //    if(i==9){i=0;}
-   //    if(j==4){j=0;}
+   //    if(j==5){j=0;}
    //    i++;
    //    j++;
    //  }
