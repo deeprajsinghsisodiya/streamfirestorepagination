@@ -41,26 +41,37 @@ class CommentNotifier extends StateNotifier<AsyncValue<List<Comment>>> {
   int j=0;
   _fetchFirestoreData() async {
     // If it's loading, return
-print(photostring[0]);
- if (uploadonce ==true) { var collection = FirebaseFirestore.instance.collection('comments');
-    var querySnapshots = await collection.get();
-    for (var doc in querySnapshots.docs) {
+// print(photostring[0]);
+ if (uploadonce ==true) {
+   ///update the exsisting content
+   // var collection = FirebaseFirestore.instance.collection('comments');
+   //  var querySnapshots = await collection.get();
+   //  for (var doc in querySnapshots.docs) {
+   //    await doc.reference.update({
+   //      'title': username[j],
+   //    });
+   //      await doc.reference.update({
+   //        'text': photostring[i],
+   //      });
+   //    if(i==9){i=0;}
+   //    if(j==4){j=0;}
+   //    i++;
+   //    j++;
+   //  }
+/// add new comments.
+//    for(int k=0;k<=40;k++){
+//      var comment = Comment(
+//        text:  photostring[i],
+//        title: username[j],
+//        createdAt: DateTime.now(),
+//      );
+//      await _firestore.collection('comments').add(comment.toJson());
+//         if(i==9){i=0;}
+//         if(j==4){j=0;}
+//         i++;
+//         j++;
+//    }
 
-      await doc.reference.update({
-        'title': username[j],
-
-      });
-
-        await doc.reference.update({
-          'text': photostring[i],
-
-        });
-
-      if(i==9){i=0;}
-      if(j==4){j=0;}
-      i++;
-      j++;
-    }
  uploadonce = false;
  }
 
