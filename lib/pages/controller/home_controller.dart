@@ -138,3 +138,22 @@ class TextNotifier extends StateNotifier<String> {
   set value(String text) => state = text;  // value and text are just name can be any word ,
 
 }
+
+///implementation of notifier in place of statenotifier for text same results.
+// final textProvider =
+// NotifierProvider<TextNotifier, String> (TextNotifier.new);
+//
+// class TextNotifier extends Notifier<String> {
+//   TextNotifier() : super();
+//
+//   set value(String text) => state = text;
+//
+//   @override
+//   String build() {
+//     '';
+//     // TODO: implement build
+//     throw UnimplementedError();
+//   }  // value and text are just name can be any word ,
+//
+// }
+

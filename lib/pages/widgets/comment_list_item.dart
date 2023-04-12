@@ -27,17 +27,17 @@ class CommentListItem extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(12.0),
-          //   child: ClipRRect(
-          //     borderRadius: BorderRadius.circular(8),
-          //     child: CachedNetworkImage(
-          //       imageUrl: comment.text,
-          //       // placeholder: (context, url) => CircularProgressIndicator(),
-          //       errorWidget: (context, url, error) => Icon(Icons.error),
-          //     ),
-          //   ),
-          // ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: comment.text,
+                // placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+            ),
+          ),
           Padding(
             padding: EdgeInsets.fromLTRB(20.0, 2.0, 0.0, 0.0),
             child: Text(
@@ -45,13 +45,13 @@ class CommentListItem extends ConsumerWidget {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.0, 2.0, 0.0, 0.0),
-            child: Text(
-              comment.text,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.fromLTRB(20.0, 2.0, 0.0, 0.0),
+          //   child: Text(
+          //     comment.text,
+          //     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          //   ),
+          // ),
 
           // ListTile(
           //   // title: Text(comment.text),
