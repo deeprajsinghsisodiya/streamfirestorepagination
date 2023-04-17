@@ -125,9 +125,12 @@ final commentProvider =
 NotifierProvider<CommentNotifier, AsyncValue<List<Comment>>>(CommentNotifier.new);
 
 class CommentNotifier extends Notifier<AsyncValue<List<Comment>>> {
-  CommentNotifier() : super() {
+  CommentNotifier() : super()
+  {
+    // AsyncLoading();
     _fetchFirestoreData();
     controller.addListener(() => _scrollListeners());
+    ref.notifyListeners();
   }
 
   List<String> username =['Foo','Bar','Bob','Joo','Mart','dav'];
@@ -234,12 +237,8 @@ class CommentNotifier extends Notifier<AsyncValue<List<Comment>>> {
   }
 
   @override
-  AsyncValue<List<Comment>> build() {
-    // const AsyncLoading();
-    // _fetchFirestoreData();
-    // controller.addListener(() => _scrollListeners());
-    // TODO: implement build
-    throw UnimplementedError();
+  AsyncValue<List<Comment>> build() { AsyncLoading();AsyncValue.data([]); throw UnimplementedError();
+
   }
 }
 
