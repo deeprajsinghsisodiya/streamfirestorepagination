@@ -6,6 +6,13 @@ import 'package:streamfirestorepagination/repositories/comment_repository.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+// final textProvider =
+// NotifierProvider<TextNotifier, String> (TextNotifier.new);
+//
+// class TextNotifier extends Notifier<String> {
+//   TextNotifier() : super();
+
 final commentProvider =
     StateNotifierProvider<CommentNotifier, AsyncValue<List<Comment>>>(
         (ref) => CommentNotifier(ref: ref));
