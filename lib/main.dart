@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:streamfirestorepagination/firebase_options.dart';
 import 'package:streamfirestorepagination/pages/home/home_page.dart';
-import 'package:streamfirestorepagination/pages/home/notification.dart';
+
 import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  NotificationService().initNotification();
+
   tz.initializeTimeZones();
 
 

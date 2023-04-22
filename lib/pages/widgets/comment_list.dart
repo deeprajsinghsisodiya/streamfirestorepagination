@@ -16,7 +16,8 @@ class CommentList extends ConsumerWidget {
       data: (data) => ListView.builder(
         cacheExtent: 88888,
         controller: notifier.controller,
-        itemCount: data.length < notifier.totalCount ? data.length + 1 : data.length,
+        itemCount:
+        data.length < notifier.totalCount ? data.length + 1 : data.length,
         itemBuilder: (context, index) {
           if (index != data.length) {
             return CommentListItem(comment: data[index]);

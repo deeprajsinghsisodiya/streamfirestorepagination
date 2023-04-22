@@ -1,10 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:streamfirestorepagination/model/comment.dart';
 import 'package:streamfirestorepagination/repositories/comment_repository.dart';
 
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+import 'package:stack_trace/stack_trace.dart' as stack_trace;
+
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+
+//
 //
 // final commentProvider =
 //     StateNotifierProvider<CommentNotifier, AsyncValue<List<Comment>>>(
@@ -125,15 +131,33 @@ final commentProvider =
 NotifierProvider<CommentNotifier, AsyncValue<List<Comment>>>(CommentNotifier.new);
 
 class CommentNotifier extends Notifier<AsyncValue<List<Comment>>> {
-  CommentNotifier() : super()
-  {
-    // AsyncLoading();
-    _fetchFirestoreData();
-    controller.addListener(() => _scrollListeners());
+  CommentNotifier() : super(){[];
+    // AsyncValue.data([]);
+  }
+  // {
+  //   // AsyncLoading();
+  //   // _fetchFirestoreData();
+  //   // controller.addListener(() => _scrollListeners());
+  //   // // _fetchFirestoreData();
+  //   // // controller.addListener(() => _scrollListeners());
+  //   // // ref.notifyListeners();
+  // }
+  @override
+  AsyncValue<List<Comment>> build  ()  {
+
+        fetchFirestoreData();
+       controller.addListener(() => _scrollListeners());
     ref.notifyListeners();
+
+     FlutterError.demangleStackTrace = (StackTrace stack) {
+       if (stack is stack_trace.Trace) return stack.vmTrace;
+       if (stack is stack_trace.Chain) return stack.toTrace().vmTrace;
+       return stack;
+     };
+    throw UnimplementedError();
+
   }
 
-  List<String> username =['Foo','Bar','Bob','Joo','Mart','dav'];
 
   List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
     'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
@@ -156,41 +180,41 @@ class CommentNotifier extends Notifier<AsyncValue<List<Comment>>> {
   int totalCount = 0;
   int i = 0;
   int j=0;
-  _fetchFirestoreData() async {
+  fetchFirestoreData() async {
     // If it's loading, return
 // print(photostring[0]);
-    if (uploadonce ==true) {
-      ///update the exsisting content
-      // var collection = FirebaseFirestore.instance.collection('comments');
-      //  var querySnapshots = await collection.get();
-      //  for (var doc in querySnapshots.docs) {
-      //    await doc.reference.update({
-      //      'title': username[j],
-      //    });
-      //      await doc.reference.update({
-      //        'text': photostring[i],
-      //      });
-      //    if(i==9){i=0;}
-      //    if(j==5){j=0;}
-      //    i++;
-      //    j++;
-      //  }
-      /// add new comments.
-//    for(int k=0;k<=40;k++){
-//      var comment = Comment(
-//        text:  photostring[i],
-//        title: username[j],
-//        createdAt: DateTime.now(),
-//      );
-//      await _firestore.collection('comments').add(comment.toJson());
-//         if(i==9){i=0;}
-//         if(j==4){j=0;}
-//         i++;
-//         j++;
-//    }
-
-      uploadonce = false;
-    }
+//     if (uploadonce ==true) {
+//       ///update the exsisting content
+//       // var collection = FirebaseFirestore.instance.collection('comments');
+//       //  var querySnapshots = await collection.get();
+//       //  for (var doc in querySnapshots.docs) {
+//       //    await doc.reference.update({
+//       //      'title': username[j],
+//       //    });
+//       //      await doc.reference.update({
+//       //        'text': photostring[i],
+//       //      });
+//       //    if(i==9){i=0;}
+//       //    if(j==5){j=0;}
+//       //    i++;
+//       //    j++;
+//       //  }
+//       /// add new comments.
+// //    for(int k=0;k<=40;k++){
+// //      var comment = Comment(
+// //        text:  photostring[i],
+// //        title: username[j],
+// //        createdAt: DateTime.now(),
+// //      );
+// //      await _firestore.collection('comments').add(comment.toJson());
+// //         if(i==9){i=0;}
+// //         if(j==4){j=0;}
+// //         i++;
+// //         j++;
+// //    }
+//
+//       uploadonce = false;
+//     }
 
     if (_isLoading) return;
     _isLoading = true;
@@ -223,23 +247,19 @@ class CommentNotifier extends Notifier<AsyncValue<List<Comment>>> {
         !controller.position.outOfRange && controller.position.pixels != 0;
     if (reachMaxExtent && outOfRange) {
       // Firestore Load the next list
-      await _fetchFirestoreData();
+      await fetchFirestoreData();
     }
   }
 
   addComment(Comment comment) async {
-    await _firestore.collection('comments').add(comment.toJson());
-    print('aadd executed');
+    // await firestore.collection('comments').add(comment.toJson());
+    print('add executed');
   }
 
   removeComment(String id) async {
-    await _firestore.collection('comments').doc(id).delete();
+    await firestore.collection('comments').doc(id).delete();
   }
 
-  @override
-  AsyncValue<List<Comment>> build() { AsyncLoading();AsyncValue.data([]); throw UnimplementedError();
-
-  }
 }
 
 final titleProvider =

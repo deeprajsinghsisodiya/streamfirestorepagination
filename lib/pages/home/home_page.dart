@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:streamfirestorepagination/pages/widgets/comment_dialog.dart';
 import 'package:streamfirestorepagination/pages/widgets/comment_list.dart';
 
+import '../../repositories/asyncnotifierriverpod.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -17,7 +19,7 @@ class HomePage extends StatelessWidget {
           icon: Icon(Icons.add),
         )
       ]),
-      body: CommentList(),
+      body:  MyHomePage(title: 'ggggg',),
     );
   }
 }
