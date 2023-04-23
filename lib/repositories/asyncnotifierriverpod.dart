@@ -10,14 +10,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:streamfirestorepagination/model/comment.dart';
 
-
-
-
-
-
-
-
-
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -36,13 +28,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               cacheExtent: 88888,
               itemCount: a.length,
               itemBuilder: (context, index) {
-                return    Center(
+                return Center(
                   child: Text(
-                    a[index].text  + a[index].title + a[index].createdAt.toString() ,
+                    a[index].text + a[index].title + a[index].createdAt.toString(),
                     style: const TextStyle(fontSize: 30),
-                  ),);
-              }
-          ),
+                  ),
+                );
+              }),
           error: (error, stack) => Text(error.toString()),
           loading: () => const Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
@@ -55,90 +47,75 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 }
 
-
-final StreamController<List<Comment>> _streamController =
-StreamController<List<Comment>>.broadcast();
-DateTime  x=DateTime.now();
-Comment c = Comment(title: 'tt', text: 'tt', createdAt: x) ;
-Comment d = Comment(title: 'ff', text: 'ff', createdAt: x) ;
-List<Comment> m = [c,d];
-List<Comment> n = [d,d];
+final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
+DateTime x = DateTime.now();
+Comment c = Comment(title: 'tt', text: 'tt', createdAt: x);
+Comment d = Comment(title: 'ff', text: 'ff', createdAt: x);
+List<Comment> m = [c, d];
+List<Comment> n = [d, d];
 
 final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
 class MyNotifier extends AsyncNotifier<List<Comment>> {
   bool onlylisten = true;
   List<Comment> comments = [];
   List<List<Comment>> _comments = [];
 
-  // @override
-  // set state(AsyncValue<List<Comment>> comments) {
-  //   print('ssdfdf');
-  //   state = comments;
-  // }
   @override
   Future<List<Comment>> build() async {
     // List<Comment> comments;
     print(' only listen $onlylisten');
-
     return aasd();
-
   }
 
-
-
-
-
-
-  Future<List<Comment>> aasd()async{
+  Future<List<Comment>> aasd() async {
+    /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
     onlylisten = false;
     print(' only listen $onlylisten');
-   var query = _firestore
-       .collection('comments')
-       .orderBy('createdAt', descending: true)
-       .limit(20);
+    var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(20);
 
-   var currentRequestIndex = _comments.length;
-   query.snapshots().listen((event) {
-     if (event.docs.isNotEmpty) {
-       comments = event.docs
-           .map((element) => Comment.fromFirestore(element))
-           .toList();
-       _comments.add(comments);
-       print('listen executed');
-       if(onlylisten == true){
+    var currentRequestIndex = _comments.length;
+    query.snapshots().listen(
+      (event) {
+        if (event.docs.isNotEmpty) {
+          comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
+          _comments.add(comments);
+          print('listen executed');
+          if (onlylisten == true) {
+            // doSomething();
+            print(' only listen $onlylisten');
+          }
 
-         // doSomething();
-         print(' only listen $onlylisten');
-       }
+          var pageExists = currentRequestIndex < _comments.length;
+          if (pageExists) {
+            _comments[currentRequestIndex] = comments;
+            int y = comments.length;
+            print('if of page exist executed here is comment $y');
+          }
+          // If the page doesn't exist, add a new page
+          else {
+            print('else of page exist executed $pageExists'); //else of page exist executed false executed when we add data first time
+            _comments.add(comments);
+          }
+        }
+      },
+    );
 
-       var pageExists = currentRequestIndex < _comments.length;
-       if (pageExists) {
-         _comments[currentRequestIndex] = comments;
-         int y = comments.length;
-         print('if of page exist executed here is comment $y');
-       }
-       // If the page doesn't exist, add a new page
-       else {
-         print('else of page exist executed $pageExists');//else of page exist executed false executed when we add data first time
-         _comments.add(comments);
-       }
-
-     }});
-
-   print(_comments);
-   await Future.delayed(const Duration(seconds: 1));
+    print(_comments);
+    await Future.delayed(const Duration(seconds: 1));
     onlylisten = true;
     print(' only listen $onlylisten');
-   return comments;
+    return comments;
+  }
 
- }
-
-/// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
+  /// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
   doSomething11111() async {
     state = const AsyncLoading();
     await Future.delayed(const Duration(seconds: 1));
     state = AsyncData(comments);
+
+    /// state = AsyncData(n); we can replace by this
     print(' only listen of do something $onlylisten');
   }
 
@@ -148,9 +125,17 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
       state = const AsyncLoading();
       await Future.delayed(const Duration(seconds: 1));
       print(' only listen of do something $onlylisten');
-       print(comments);
+      print(comments);
       return comments;
+
+      /// return n; we can replace by this
     });
+  }
+
+  /// this update the state by refresh.
+  doSomethingonrefresh() async {
+    print(' only listen of do something $onlylisten');
+    state = await ref.refresh(provider);
   }
 }
 // @protected
@@ -164,9 +149,6 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
 //   state = AsyncData<State>(newState);
 //   return newState;
 // }
-
-
-
 
 // class MyHomePage extends ConsumerStatefulWidget {
 //   const MyHomePage({super.key, required this.title});
@@ -264,8 +246,6 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
 //
 //
 
-
-
 //
 //
 // class MyHomePage extends ConsumerStatefulWidget {
@@ -322,11 +302,6 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
 //     });
 //   }
 // }
-
-
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
