@@ -39,7 +39,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           loading: () => const Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ref.read(provider.notifier).doSomething();
+          ref.read(provider.notifier).doSomethingaddtoasyncdata() ;
         },
         child: const Icon(Icons.play_circle),
       ),
@@ -66,7 +66,9 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
   Future<List<Comment>> build() async {
     // List<Comment> comments;
     print(' only listen $onlylisten');
+    updateShouldNotify: (_, __) => true;
     return aasd();
+
   }
 
   Future<List<Comment>> aasd() async {
@@ -137,6 +139,22 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
     print(' only listen of do something $onlylisten');
     state = await ref.refresh(provider);
   }
+
+  /// This will add/remove its all local not impacted firebase. Comment instance on the async value.
+  doSomethingaddtoasyncdata()  async {
+    print(' only listen of do something $onlylisten');
+    state = AsyncValue.data([c, ...state.value!]);
+
+    await Future.delayed(const Duration(seconds: 5));
+    state = AsyncValue.data(List.from(state.value!)..remove(c));
+
+    await Future.delayed(const Duration(seconds: 5));
+    state = AsyncValue.data(List.from(state.value!)..remove(state.value![0]));
+
+    // state = await ref.refresh(provider);
+  }
+
+
 }
 // @protected
 // Future<State> update(
