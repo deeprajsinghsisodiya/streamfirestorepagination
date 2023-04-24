@@ -35,7 +35,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ),
                 );
               }),
-          error: (error, stack) => Text(error.toString()),
+          error: (error, stack) => SingleChildScrollView(
+            child: Column(
+              children: [
+                Text(error.toString()),
+                // Text(stack.toString()),
+              ],
+            ),
+          ),
           loading: () => const Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -46,6 +53,39 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     );
   }
 }
+
+final chatProvider = StreamProvider<List<Comment>>((ref) async* {
+  // Connect to an API using sockets, and decode the output
+
+
+    // ref.refresh(chatProvider); cant be done;
+
+  var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(20);
+  List<Comment> comments = [];
+  bool updown = true;
+  // var currentRequestIndex = _comments.length;
+   query.snapshots().listen(
+          (event) {
+        if (event.docs.isNotEmpty) {
+          var comments1 = event.docs.map((element) => Comment.fromFirestore(element)).toList();
+          // _comments.add(comments);
+          comments = comments1;
+          if(updown == false){
+           /// ref.refresh(chatProvider); cant be done; /// we cant make function or update the value.
+          }
+        }
+      });
+  await Future.delayed(const Duration(seconds: 1));
+  yield comments;
+});
+
+
+
+
+
+
+
+
 
 final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
 DateTime x = DateTime.now();
@@ -75,7 +115,7 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
     /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
     onlylisten = false;
     print(' only listen $onlylisten');
-    var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(20);
+    var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(0);
 
     var currentRequestIndex = _comments.length;
     query.snapshots().listen(
@@ -83,6 +123,7 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
         if (event.docs.isNotEmpty) {
           comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
           _comments.add(comments);
+          ///yeild commets; this will not work
           print('listen executed');
           if (onlylisten == true) {
             // doSomething();
