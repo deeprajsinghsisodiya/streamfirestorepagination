@@ -65,15 +65,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   scrollListeners() async {
     // Whether the scroll has gone beyond the middle of the entire range.
     final reachMaxExtent =
-        controller.offset >= controller.position.maxScrollExtent - 20.0;
+        controller.offset >= controller.position.maxScrollExtent;
     // Whether the scroll does not go beyond the full range and is not at the top.
     final outOfRange =
         !controller.position.outOfRange && controller.position.pixels != 0;
-    if (reachMaxExtent && outOfRange) {
+    if (reachMaxExtent && outOfRange ) {
       // Firestore Load the next list
       print('scrooooooooool  caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaallllllllllllllleeeeeeeeeeed');
-      ref.read(provider.notifier).aasd();
-      ref.read(provider.notifier).doSomethingonrefresh() ;
+      // ref.read(provider.notifier).aasd();
+
+       await  ref.read(provider.notifier).doSomethingonrefresh() ;
+
       // doSomething();
 
     }
@@ -111,26 +113,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
 
 
-
-
-
 final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
 DateTime x = DateTime.now();
 Comment c = Comment(title: 'tt', text: 'tt', createdAt: x);
 Comment d = Comment(title: 'ff', text: 'ff', createdAt: x);
 int totalCount = 0;
+List<Comment> results = [];
 
 
 List<Comment> m = [c, d];
 List<Comment> n = [d, d];
 
-final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
+final provider = StreamNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 
 
 
-class MyNotifier extends AsyncNotifier<List<Comment>> {
+class MyNotifier extends StreamNotifier <List<Comment>> {
   bool onlylisten = true;
 
   DocumentSnapshot? _lastDocument;
@@ -138,14 +138,14 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
   List<Comment> comments = [];
   List<List<Comment>> _comments = [];
   @override
-  Future<List<Comment>> build() async {
+  Stream<List<Comment>> build() async* {
     // List<Comment> comments;
     print(' only listen $onlylisten');
 
     ref.notifyListeners();
-  totalCount = await count();
-  print('$totalCount');
-    return aasd();
+    totalCount = await count();
+     print('$totalCount');
+    yield* aasd();    ///* is needed to solve assigning issue from list of comments to stream of list of comments
   }
 
 
@@ -157,14 +157,14 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
         .get();
     return query.count;
   }
-  Future<List<Comment>> aasd() async {
+  Stream<List<Comment>> aasd() async* {
     /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
-    List<Comment> results = [];
+
     onlylisten = false;
     print(' only listen $onlylisten');
     var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(30);
 
-    if (_lastDocument != null) {
+    if (_lastDocument != null  ) {
       query = query.startAfterDocument(_lastDocument!);
     }
     var currentRequestIndex = _comments.length;
@@ -175,11 +175,11 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
     // var p =_comments8.length ;
     // listen() Use methods to subscribe to updates
     query.snapshots().listen(
-      (event) {
+          (event) {
         if (event.docs.isNotEmpty) {
           comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
-          _comments.add(comments);
-          ///yeild commets; this will not work
+          // _comments.add(comments);
+          ///yield comments; this will not work
           print('listen executed');
           if (onlylisten == true) {
             // doSomething();
@@ -197,16 +197,25 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
             _comments[currentRequestIndex] = comments;
             int y = comments.length;
             print('if of page exist executed here is comment $y');
+             // doSomethingonrefresh();
+            // ref.notifyListeners();
           }
           // If the page doesn't exist, add a new page
           else {
             print('else of page exist executed $pageExists'); //else of page exist executed false executed when we add data first time
             _comments.add(comments);
           }
-          results = _comments.fold<List<Comment>>(
-              [], (initialValue, pageItems) => initialValue..addAll(pageItems));
-          int x = results.length;
-          print('result $x');
+
+            results = _comments.fold<List<Comment>>(
+                [], (initialValue, pageItems) => initialValue..addAll(pageItems));
+            int x = results.length;
+            print('result $x');
+
+
+          if (pageExists) {
+            doSomethingonrefresh1();
+            // state = ref.refresh(provider);
+          }
         }
         if (event.docs.isEmpty && event.docChanges.isNotEmpty) {
           for (final data in event.docChanges) {
@@ -235,10 +244,12 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
     await Future.delayed(const Duration(seconds: 1));
     onlylisten = true;
     print(' only listen $onlylisten');
+    yield results;
+    // results1 = results;
 
-    results1 = results;
-    return results;
-    results1 =results;
+
+    // ref.notifyListeners();
+    // results1 =results;
   }
 
 
@@ -262,16 +273,23 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
       await Future.delayed(const Duration(seconds: 1));
       print(' only listen of do something $onlylisten');
       print(comments);
-      return results1;
+      return results;
 
       /// return n; we can replace by this
     });
   }
+  doSomethingonrefresh1() async {
+      state = await ref.refresh(provider);}
 
   /// this update the state by refresh.
   doSomethingonrefresh() async {
+    print('ref ke if ke bahar');
+    print(totalCount);
+    print(results.length);
+    if(totalCount >=results.length){
+      print('ref ke if ke andar');
     print(' only listen of do something $onlylisten');
-    state = await ref.refresh(provider);
+    state = await ref.refresh(provider);}
   }
 
   /// This will add/remove its all local not impacted firebase. Comment instance on the async value.
@@ -290,6 +308,184 @@ class MyNotifier extends AsyncNotifier<List<Comment>> {
 
 
 }
+
+
+// final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
+// DateTime x = DateTime.now();
+// Comment c = Comment(title: 'tt', text: 'tt', createdAt: x);
+// Comment d = Comment(title: 'ff', text: 'ff', createdAt: x);
+// int totalCount = 0;
+//
+//
+// List<Comment> m = [c, d];
+// List<Comment> n = [d, d];
+//
+// final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
+// final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+//
+//
+//
+//
+// class MyNotifier extends AsyncNotifier<List<Comment>> {
+//   bool onlylisten = true;
+//
+//   DocumentSnapshot? _lastDocument;
+//   List<Comment> results1 = [];
+//   List<Comment> comments = [];
+//   List<List<Comment>> _comments = [];
+//   @override
+//   Future<List<Comment>> build() async {
+//     // List<Comment> comments;
+//     print(' only listen $onlylisten');
+//
+//     ref.notifyListeners();
+//   totalCount = await count();
+//   print('$totalCount');
+//     return aasd();
+//   }
+//
+//
+//   count () async {
+//     AggregateQuerySnapshot query = await _firestore
+//         .collection('comments')
+//         .orderBy('createdAt', descending: true)
+//         .count()
+//         .get();
+//     return query.count;
+//   }
+//   Future<List<Comment>> aasd() async {
+//     /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
+//     List<Comment> results = [];
+//     onlylisten = false;
+//     print(' only listen $onlylisten');
+//     var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(30);
+//
+//     if (_lastDocument != null) {
+//       query = query.startAfterDocument(_lastDocument!);
+//     }
+//     var currentRequestIndex = _comments.length;
+//     var d = _comments.length;
+//     print('currentRequestIndex outside isnotempty $currentRequestIndex');
+//     // print('_comments.length $_comments.length');
+//     // print('_comments $_comments');
+//     // var p =_comments8.length ;
+//     // listen() Use methods to subscribe to updates
+//     query.snapshots().listen(
+//       (event) {
+//         if (event.docs.isNotEmpty) {
+//           comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
+//           _comments.add(comments);
+//           ///yield comments; this will not work
+//           print('listen executed');
+//           if (onlylisten == true) {
+//             // doSomething();
+//             print(' only listen $onlylisten');
+//           }
+//
+//           var pageExists = currentRequestIndex < _comments.length;
+//           print('currentRequestIndex inside if of isnotempty $currentRequestIndex');
+//           // print('currentRequestIndex d inside if of isnotempty $d');
+//           // print('currentRequestIndex p inside if of isnotempty $p');
+//           // print('_comments.length $_comments.length');
+//           int z = _comments.length;
+//           print('_comments $z.');
+//           if (pageExists) {
+//             _comments[currentRequestIndex] = comments;
+//             int y = comments.length;
+//             print('if of page exist executed here is comment $y');
+//           }
+//           // If the page doesn't exist, add a new page
+//           else {
+//             print('else of page exist executed $pageExists'); //else of page exist executed false executed when we add data first time
+//             _comments.add(comments);
+//           }
+//           results = _comments.fold<List<Comment>>(
+//               [], (initialValue, pageItems) => initialValue..addAll(pageItems));
+//           int x = results.length;
+//           print('result $x');
+//         }
+//         if (event.docs.isEmpty && event.docChanges.isNotEmpty) {
+//           for (final data in event.docChanges) {
+//             //If the index of the modified document is -1 (deleted article)
+//             if (data.newIndex == -1) {
+//               // Delete the article from the global list
+//               results
+//                   .removeWhere((element) => element.id == data.doc.data()?['id']);
+//               print('delete if called');
+//
+//             }
+//           }
+//           // StreamController Broadcast all comments using
+//           // _streamController.add(results);
+//         }
+//
+//
+//         if (results.isNotEmpty && currentRequestIndex == _comments.length - 1) {
+//           _lastDocument = event.docs.last;
+//           print('last doc called');
+//         }
+//       },
+//     );
+//
+//     print(_comments);
+//     await Future.delayed(const Duration(seconds: 1));
+//     onlylisten = true;
+//     print(' only listen $onlylisten');
+//
+//     results1 = results;
+//     return results;
+//     results1 =results;
+//   }
+//
+//
+//
+//
+//
+//   /// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
+//   doSomething11111() async {
+//     state = const AsyncLoading();
+//     await Future.delayed(const Duration(seconds: 1));
+//     state = AsyncData(comments);
+//
+//     /// state = AsyncData(n); we can replace by this
+//     print(' only listen of do something $onlylisten');
+//   }
+//
+//   /// this update the state just by calling a update. returning is must here
+//   doSomething() async {
+//     update((data) async {
+//       state = const AsyncLoading();
+//       await Future.delayed(const Duration(seconds: 1));
+//       print(' only listen of do something $onlylisten');
+//       print(comments);
+//       return results1;
+//
+//       /// return n; we can replace by this
+//     });
+//   }
+//
+//   /// this update the state by refresh.
+//   doSomethingonrefresh() async {
+//     print(' only listen of do something $onlylisten');
+//     state = await ref.refresh(provider);
+//   }
+//
+//   /// This will add/remove its all local not impacted firebase. Comment instance on the async value.
+//   doSomethingaddtoasyncdata()  async {
+//     print(' only listen of do something $onlylisten');
+//     state = AsyncValue.data([c, ...state.value!]);
+//
+//     await Future.delayed(const Duration(seconds: 5));
+//     state = AsyncValue.data(List.from(state.value!)..remove(c));
+//
+//     await Future.delayed(const Duration(seconds: 5));
+//     state = AsyncValue.data(List.from(state.value!)..remove(state.value![0]));
+//
+//     // state = await ref.refresh(provider);
+//   }
+//
+//
+// }
 
 // @protected
 // Future<State> update(
