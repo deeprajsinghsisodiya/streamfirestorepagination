@@ -42,8 +42,8 @@ class CommentRepository {
     var currentRequestIndex = _comments.length;
     var d = _comments.length;
      print('currentRequestIndex outside isnotempty $currentRequestIndex');
-    // print('_comments.length $_comments.length');
-    // print('_comments $_comments');
+    print('_comments.length $_comments.length');
+    print('_comments $_comments');
 var p =_comments8.length ;
     // listen() Use methods to subscribe to updates
     query.snapshots().listen((event) {
