@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'comment.g.dart';
 
 @JsonSerializable()
-class Comment {
+class Comment  {
   final String? id;
   final String title, text;
   final DateTime createdAt;

@@ -180,7 +180,7 @@ class TextNotifier extends StateNotifier<String> {
 //
 //   }
 //
-//
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NWEzMzYxN2M1NzJlZDMzYzVlMmFlMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4MzY1MDA4MywiZXhwIjoxNjgzNzM2NDgzfQ.YyKCIi7uM_nQMcWGlP4ElnTZcBaMQYCL-LSiT6mhPRI
 //   List<String> photostring = ['https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg','https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg',
 //     'https://images.pexels.com/photos/8821918/pexels-photo-8821918.jpeg',
 //     'https://images.pexels.com/photos/1612353/pexels-photo-1612353.jpeg',

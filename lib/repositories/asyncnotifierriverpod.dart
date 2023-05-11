@@ -6,9 +6,15 @@ import 'package:streamfirestorepagination/pages/widgets/comment_list_item.dart';
 import 'package:streamfirestorepagination/pages/widgets/comment_shimmer.dart';
 import 'dart:async';
 import 'dart:async';
+import 'dart:convert';
+import 'package:equatable/equatable.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:streamfirestorepagination/model/comment.dart';
+
+import 'comment_repository.dart';
+
+
 final ScrollController controller = ScrollController();
 
 class MyHomePage extends ConsumerStatefulWidget {
@@ -82,10 +88,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   }
 
 }
+// //
 //
 // final chatProvider = StreamProvider<List<Comment>>((ref) async* {
 //   // Connect to an API using sockets, and decode the output
 //
+//   @override
+//   Stream<List<Comment>> build() async* {
+//     // List<Comment> comments;
+//     print(' only listen $onlylisten');
+//
+//     ref.notifyListeners();
+//     totalCount = await count();
+//      print('$totalCount');
+//     yield* stream();    ///* is needed to solve assigning issue from list of comments to stream of list of comments
+//   }
 //
 //     // ref.refresh(chatProvider); cant be done;
 //
@@ -107,11 +124,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 //   await Future.delayed(const Duration(seconds: 1));
 //   yield comments;
 // });
-
-
-
-
-
+//
+//
+//
+//
+//
 
 final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
 DateTime x = DateTime.now();
@@ -127,7 +144,7 @@ List<Comment> n = [d, d];
 final provider = StreamNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-
+final CommentRepository _repository = CommentRepository();
 
 
 class MyNotifier extends StreamNotifier <List<Comment>> {
@@ -145,7 +162,7 @@ class MyNotifier extends StreamNotifier <List<Comment>> {
     ref.notifyListeners();
     totalCount = await count();
      print('$totalCount');
-    yield* aasd();    ///* is needed to solve assigning issue from list of comments to stream of list of comments
+    yield* stream();    ///* is needed to solve assigning issue from list of comments to stream of list of comments
   }
 
 
@@ -244,6 +261,7 @@ class MyNotifier extends StreamNotifier <List<Comment>> {
     await Future.delayed(const Duration(seconds: 1));
     onlylisten = true;
     print(' only listen $onlylisten');
+
     yield results;
     // results1 = results;
 
@@ -253,7 +271,13 @@ class MyNotifier extends StreamNotifier <List<Comment>> {
   }
 
 
-
+ stream (){
+   _repository.listenCommentStream().listen((event) async {
+     totalCount = await _repository.commentTotalCount();
+     state = AsyncValue.data(event);
+     // print('controller called listencommentstream');
+   });
+ }
 
 
   /// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
@@ -309,294 +333,198 @@ class MyNotifier extends StreamNotifier <List<Comment>> {
 
 }
 
+//
+// // final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
+// // DateTime x = DateTime.now();
+// // Comment c = Comment(title: 'tt', text: 'tt', createdAt: x);
+// // Comment d = Comment(title: 'ff', text: 'ff', createdAt: x);
+// // int totalCount = 0;
+// //
+// //
+// // List<Comment> m = [c, d];
+// // List<Comment> n = [d, d];
+// //
+// // final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
+// // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+// //
+// //
+// //
+// //
+// // class MyNotifier extends AsyncNotifier<List<Comment>> {
+// //   bool onlylisten = true;
+// //
+// //   DocumentSnapshot? _lastDocument;
+// //   List<Comment> results1 = [];
+// //   List<Comment> comments = [];
+// //   List<List<Comment>> _comments = [];
+// //   @override
+// //   Future<List<Comment>> build() async {
+// //     // List<Comment> comments;
+// //     print(' only listen $onlylisten');
+// //
+// //     ref.notifyListeners();
+// //   totalCount = await count();
+// //   print('$totalCount');
+// //     return aasd();
+// //   }
+// //
+// //
+// //   count () async {
+// //     AggregateQuerySnapshot query = await _firestore
+// //         .collection('comments')
+// //         .orderBy('createdAt', descending: true)
+// //         .count()
+// //         .get();
+// //     return query.count;
+// //   }
+// //   Future<List<Comment>> aasd() async {
+// //     /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
+// //     List<Comment> results = [];
+// //     onlylisten = false;
+// //     print(' only listen $onlylisten');
+// //     var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(30);
+// //
+// //     if (_lastDocument != null) {
+// //       query = query.startAfterDocument(_lastDocument!);
+// //     }
+// //     var currentRequestIndex = _comments.length;
+// //     var d = _comments.length;
+// //     print('currentRequestIndex outside isnotempty $currentRequestIndex');
+// //     // print('_comments.length $_comments.length');
+// //     // print('_comments $_comments');
+// //     // var p =_comments8.length ;
+// //     // listen() Use methods to subscribe to updates
+// //     query.snapshots().listen(
+// //       (event) {
+// //         if (event.docs.isNotEmpty) {
+// //           comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
+// //           _comments.add(comments);
+// //           ///yield comments; this will not work
+// //           print('listen executed');
+// //           if (onlylisten == true) {
+// //             // doSomething();
+// //             print(' only listen $onlylisten');
+// //           }
+// //
+// //           var pageExists = currentRequestIndex < _comments.length;
+// //           print('currentRequestIndex inside if of isnotempty $currentRequestIndex');
+// //           // print('currentRequestIndex d inside if of isnotempty $d');
+// //           // print('currentRequestIndex p inside if of isnotempty $p');
+// //           // print('_comments.length $_comments.length');
+// //           int z = _comments.length;
+// //           print('_comments $z.');
+// //           if (pageExists) {
+// //             _comments[currentRequestIndex] = comments;
+// //             int y = comments.length;
+// //             print('if of page exist executed here is comment $y');
+// //           }
+// //           // If the page doesn't exist, add a new page
+// //           else {
+// //             print('else of page exist executed $pageExists'); //else of page exist executed false executed when we add data first time
+// //             _comments.add(comments);
+// //           }
+// //           results = _comments.fold<List<Comment>>(
+// //               [], (initialValue, pageItems) => initialValue..addAll(pageItems));
+// //           int x = results.length;
+// //           print('result $x');
+// //         }
+// //         if (event.docs.isEmpty && event.docChanges.isNotEmpty) {
+// //           for (final data in event.docChanges) {
+// //             //If the index of the modified document is -1 (deleted article)
+// //             if (data.newIndex == -1) {
+// //               // Delete the article from the global list
+// //               results
+// //                   .removeWhere((element) => element.id == data.doc.data()?['id']);
+// //               print('delete if called');
+// //
+// //             }
+// //           }
+// //           // StreamController Broadcast all comments using
+// //           // _streamController.add(results);
+// //         }
+// //
+// //
+// //         if (results.isNotEmpty && currentRequestIndex == _comments.length - 1) {
+// //           _lastDocument = event.docs.last;
+// //           print('last doc called');
+// //         }
+// //       },
+// //     );
+// //
+// //     print(_comments);
+// //     await Future.delayed(const Duration(seconds: 1));
+// //     onlylisten = true;
+// //     print(' only listen $onlylisten');
+// //
+// //     results1 = results;
+// //     return results;
+// //     results1 =results;
+// //   }
+// //
+// //
+// //
+// //
+// //
+// //   /// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
+// //   doSomething11111() async {
+// //     state = const AsyncLoading();
+// //     await Future.delayed(const Duration(seconds: 1));
+// //     state = AsyncData(comments);
+// //
+// //     /// state = AsyncData(n); we can replace by this
+// //     print(' only listen of do something $onlylisten');
+// //   }
+// //
+// //   /// this update the state just by calling a update. returning is must here
+// //   doSomething() async {
+// //     update((data) async {
+// //       state = const AsyncLoading();
+// //       await Future.delayed(const Duration(seconds: 1));
+// //       print(' only listen of do something $onlylisten');
+// //       print(comments);
+// //       return results1;
+// //
+// //       /// return n; we can replace by this
+// //     });
+// //   }
+// //
+// //   /// this update the state by refresh.
+// //   doSomethingonrefresh() async {
+// //     print(' only listen of do something $onlylisten');
+// //     state = await ref.refresh(provider);
+// //   }
+// //
+// //   /// This will add/remove its all local not impacted firebase. Comment instance on the async value.
+// //   doSomethingaddtoasyncdata()  async {
+// //     print(' only listen of do something $onlylisten');
+// //     state = AsyncValue.data([c, ...state.value!]);
+// //
+// //     await Future.delayed(const Duration(seconds: 5));
+// //     state = AsyncValue.data(List.from(state.value!)..remove(c));
+// //
+// //     await Future.delayed(const Duration(seconds: 5));
+// //     state = AsyncValue.data(List.from(state.value!)..remove(state.value![0]));
+// //
+// //     // state = await ref.refresh(provider);
+// //   }
+// //
+// //
+// // }
+//
+// // @protected
+// // Future<State> update(
+// //     FutureOr<State> Function(State) cb, {
+// //       FutureOr<State> Function(Object err, StackTrace stackTrace)? onError,
+// //     }) async {
+// //   // TODO cancel on rebuild?
+// //
+// //   final newState = await future.then(cb, onError: onError);
+// //   state = AsyncData<State>(newState);
+// //   return newState;
+// // }
 
-// final StreamController<List<Comment>> _streamController = StreamController<List<Comment>>.broadcast();
-// DateTime x = DateTime.now();
-// Comment c = Comment(title: 'tt', text: 'tt', createdAt: x);
-// Comment d = Comment(title: 'ff', text: 'ff', createdAt: x);
-// int totalCount = 0;
-//
-//
-// List<Comment> m = [c, d];
-// List<Comment> n = [d, d];
-//
-// final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
-// final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//
-//
-//
-//
-// class MyNotifier extends AsyncNotifier<List<Comment>> {
-//   bool onlylisten = true;
-//
-//   DocumentSnapshot? _lastDocument;
-//   List<Comment> results1 = [];
-//   List<Comment> comments = [];
-//   List<List<Comment>> _comments = [];
-//   @override
-//   Future<List<Comment>> build() async {
-//     // List<Comment> comments;
-//     print(' only listen $onlylisten');
-//
-//     ref.notifyListeners();
-//   totalCount = await count();
-//   print('$totalCount');
-//     return aasd();
-//   }
-//
-//
-//   count () async {
-//     AggregateQuerySnapshot query = await _firestore
-//         .collection('comments')
-//         .orderBy('createdAt', descending: true)
-//         .count()
-//         .get();
-//     return query.count;
-//   }
-//   Future<List<Comment>> aasd() async {
-//     /// Return type has to be Future<List<Comment>> all the other places List<Comment>,
-//     List<Comment> results = [];
-//     onlylisten = false;
-//     print(' only listen $onlylisten');
-//     var query = _firestore.collection('comments').orderBy('createdAt', descending: true).limit(30);
-//
-//     if (_lastDocument != null) {
-//       query = query.startAfterDocument(_lastDocument!);
-//     }
-//     var currentRequestIndex = _comments.length;
-//     var d = _comments.length;
-//     print('currentRequestIndex outside isnotempty $currentRequestIndex');
-//     // print('_comments.length $_comments.length');
-//     // print('_comments $_comments');
-//     // var p =_comments8.length ;
-//     // listen() Use methods to subscribe to updates
-//     query.snapshots().listen(
-//       (event) {
-//         if (event.docs.isNotEmpty) {
-//           comments = event.docs.map((element) => Comment.fromFirestore(element)).toList();
-//           _comments.add(comments);
-//           ///yield comments; this will not work
-//           print('listen executed');
-//           if (onlylisten == true) {
-//             // doSomething();
-//             print(' only listen $onlylisten');
-//           }
-//
-//           var pageExists = currentRequestIndex < _comments.length;
-//           print('currentRequestIndex inside if of isnotempty $currentRequestIndex');
-//           // print('currentRequestIndex d inside if of isnotempty $d');
-//           // print('currentRequestIndex p inside if of isnotempty $p');
-//           // print('_comments.length $_comments.length');
-//           int z = _comments.length;
-//           print('_comments $z.');
-//           if (pageExists) {
-//             _comments[currentRequestIndex] = comments;
-//             int y = comments.length;
-//             print('if of page exist executed here is comment $y');
-//           }
-//           // If the page doesn't exist, add a new page
-//           else {
-//             print('else of page exist executed $pageExists'); //else of page exist executed false executed when we add data first time
-//             _comments.add(comments);
-//           }
-//           results = _comments.fold<List<Comment>>(
-//               [], (initialValue, pageItems) => initialValue..addAll(pageItems));
-//           int x = results.length;
-//           print('result $x');
-//         }
-//         if (event.docs.isEmpty && event.docChanges.isNotEmpty) {
-//           for (final data in event.docChanges) {
-//             //If the index of the modified document is -1 (deleted article)
-//             if (data.newIndex == -1) {
-//               // Delete the article from the global list
-//               results
-//                   .removeWhere((element) => element.id == data.doc.data()?['id']);
-//               print('delete if called');
-//
-//             }
-//           }
-//           // StreamController Broadcast all comments using
-//           // _streamController.add(results);
-//         }
-//
-//
-//         if (results.isNotEmpty && currentRequestIndex == _comments.length - 1) {
-//           _lastDocument = event.docs.last;
-//           print('last doc called');
-//         }
-//       },
-//     );
-//
-//     print(_comments);
-//     await Future.delayed(const Duration(seconds: 1));
-//     onlylisten = true;
-//     print(' only listen $onlylisten');
-//
-//     results1 = results;
-//     return results;
-//     results1 =results;
-//   }
-//
-//
-//
-//
-//
-//   /// this update the state just by calling a function state= AsyncData(value to be updated). no need to return in this.
-//   doSomething11111() async {
-//     state = const AsyncLoading();
-//     await Future.delayed(const Duration(seconds: 1));
-//     state = AsyncData(comments);
-//
-//     /// state = AsyncData(n); we can replace by this
-//     print(' only listen of do something $onlylisten');
-//   }
-//
-//   /// this update the state just by calling a update. returning is must here
-//   doSomething() async {
-//     update((data) async {
-//       state = const AsyncLoading();
-//       await Future.delayed(const Duration(seconds: 1));
-//       print(' only listen of do something $onlylisten');
-//       print(comments);
-//       return results1;
-//
-//       /// return n; we can replace by this
-//     });
-//   }
-//
-//   /// this update the state by refresh.
-//   doSomethingonrefresh() async {
-//     print(' only listen of do something $onlylisten');
-//     state = await ref.refresh(provider);
-//   }
-//
-//   /// This will add/remove its all local not impacted firebase. Comment instance on the async value.
-//   doSomethingaddtoasyncdata()  async {
-//     print(' only listen of do something $onlylisten');
-//     state = AsyncValue.data([c, ...state.value!]);
-//
-//     await Future.delayed(const Duration(seconds: 5));
-//     state = AsyncValue.data(List.from(state.value!)..remove(c));
-//
-//     await Future.delayed(const Duration(seconds: 5));
-//     state = AsyncValue.data(List.from(state.value!)..remove(state.value![0]));
-//
-//     // state = await ref.refresh(provider);
-//   }
-//
-//
-// }
 
-// @protected
-// Future<State> update(
-//     FutureOr<State> Function(State) cb, {
-//       FutureOr<State> Function(Object err, StackTrace stackTrace)? onError,
-//     }) async {
-//   // TODO cancel on rebuild?
-//
-//   final newState = await future.then(cb, onError: onError);
-//   state = AsyncData<State>(newState);
-//   return newState;
-// }
 
-// class MyHomePage extends ConsumerStatefulWidget {
-//   const MyHomePage({super.key, required this.title});
-//
-//   final String title;
-//
-//   @override
-//   ConsumerState<MyHomePage> createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends ConsumerState<MyHomePage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: ref.watch(provider).when(
-//           data: (List<Comment> a) => ListView.builder(
-//               cacheExtent: 88888,
-//               itemCount: a.length,
-//
-//               itemBuilder: (context, index) {
-//
-//                   return    Center(
-//                       child: Text(
-//                         a[index].text  + a[index].title + a[index].createdAt.toString() ,
-//
-//                         style: const TextStyle(fontSize: 30),
-//                       ),);
-//                 }
-//                 ),
-//
-//
-//
-//
-//
-//
-//           error: (error, stack) => Text(error.toString()),
-//           loading: () => const Center(child: CircularProgressIndicator())),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           ref.read(provider.notifier).doSomething();
-//         },
-//         child: const Icon(Icons.play_circle),
-//       ),
-//     );
-//   }
-// }
-//
-//
-// final StreamController<List<Comment>> _streamController =
-// StreamController<List<Comment>>.broadcast();
-// DateTime  x=DateTime.now();
-// Comment c = Comment(title: 'tt', text: 'tt', createdAt: x) ;
-// Comment d = Comment(title: 'ff', text: 'ff', createdAt: x) ;
-// List<Comment> m = [c,d];
-// List<Comment> n = [d,d];
-//
-// final provider = AsyncNotifierProvider<MyNotifier, List<Comment>>(MyNotifier.new);
-// final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-// class MyNotifier extends AsyncNotifier<List<Comment>> {
-//   List<Comment> comments = [];
-//   @override
-//   Future<List<Comment>> build() async {
-//     // List<Comment> comments;
-//         await _firestore
-//         .collection('comments')
-//         .orderBy('createdAt', descending: true)
-//         .limit(20).get().then((event) {
-//           comments = event.docs
-//               .map((element) => Comment.fromFirestore(element))
-//               .toList();
-//           print(comments);
-//         });
-//         // query.(event) {
-//         //  print('listen executed');
-//         //
-//         // comments = event.docs
-//         //     .map((element) => Comment.fromFirestore(element))
-//         //     .toList();
-//         //  print(comments);
-//         //  // return comments;
-//
-//         print(comments);
-//         return comments;
-//   }
-//
-//   doSomething() async {
-//     update((data) async {
-//       state = const AsyncLoading();
-//       await Future.delayed(const Duration(seconds: 1));
-//      print(comments);
-//       return comments;
-//     });
-//   }
-// }
-//
-//
-
-//
-//
 // class MyHomePage extends ConsumerStatefulWidget {
 //   const MyHomePage({super.key, required this.title});
 //

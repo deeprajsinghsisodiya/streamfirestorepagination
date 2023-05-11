@@ -22,8 +22,8 @@ class HomePage extends StatelessWidget {
       ]),
       body:
       // CommentList(),
-      // MyHomePage(title: 'ggggg',),
-      displayfromapi(),
+      MyHomePage(title: 'ggggg',),
+      // displayfromapi(),
     );
   }
 }
